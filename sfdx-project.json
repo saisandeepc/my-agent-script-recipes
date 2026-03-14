@@ -1,0 +1,15 @@
+{
+  "packageDirectories": [
+    {
+      "path": "force-app",
+      "default": true,
+      "package": "AgentScriptRecipes",
+      "versionName": "Spring '26",
+      "versionNumber": "66.0.0.NEXT"
+    }
+  ],
+  "name": "agent-script-recipes",
+  "namespace": "",
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "66.0"
+}

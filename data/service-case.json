@@ -1,0 +1,25 @@
+{
+    "records": [
+        {
+            "attributes": { "type": "Case", "referenceId": "case1" },
+            "Subject": "Issue with product",
+            "Status": "New",
+            "Priority": "Medium",
+            "Origin": "Web"
+        },
+        {
+            "attributes": { "type": "Case", "referenceId": "case2" },
+            "Subject": "Billing inquiry",
+            "Status": "Closed",
+            "Priority": "Low",
+            "Origin": "Phone"
+        },
+        {
+            "attributes": { "type": "Case", "referenceId": "case3" },
+            "Subject": "Shipping delay",
+            "Status": "Escalated",
+            "Priority": "High",
+            "Origin": "Email"
+        }
+    ]
+}
