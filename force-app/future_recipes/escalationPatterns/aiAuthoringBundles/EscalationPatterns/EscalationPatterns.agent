@@ -7,12 +7,6 @@ config:
    agent_type: "AgentforceEmployeeAgent"
    description: "Demonstrates patterns for escalating to human agents"
 
-connections:
-   messaging:
-      escalation_message: "I am connecting you with a human agent who can help you further."
-      outbound_route_type: "OmniChannelFlow"
-      outbound_route_name: "AgentSupportFlow"
-
 variables:
    user_sentiment: mutable string = "neutral"
    retry_count: mutable number = 0
@@ -26,9 +20,8 @@ system:
 
 start_agent topic_selector:
    description: "Routes the conversation"
-   
    reasoning:
-      instructions:|
+      instructions: |
          Select the tool that best matches the user's message and conversation history. If it's unclear, make your best guess.
       actions:
          support: @utils.transition to @topic.general_support
@@ -38,8 +31,8 @@ topic general_support:
    description: "Provides general support and handles escalation"
 
    reasoning:
-      instructions:->
-         | I can help with general questions. 
+      instructions: |
+         | I can help with general questions.
            If the user seems frustrated or asks for a human, please escalate.
          
          if @variables.user_sentiment == "frustrated":
@@ -50,4 +43,7 @@ topic general_support:
          escalate_to_human: @utils.escalate
             description: "Escalate the conversation to a human agent"
             available when @variables.user_sentiment == "frustrated" or @variables.retry_count > 2
+
+# connections block removed because the validator flags 'connections' as unexpected in this schema/version.
+# If routing is required, use @utils.escalate (already wired) and configure Omni-Channel routing in Setup instead.
 

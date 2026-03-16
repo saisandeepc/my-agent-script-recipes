@@ -1,0 +1,90 @@
+# CaseCreationAgent - Create Salesforce Case Records with Required Details
+# Demonstrates collecting required support details and creating a Case through Apex
+
+config:
+   developer_name: "CaseCreationAgent"
+   agent_label: "CaseCreationAgent"
+   agent_type: "AgentforceEmployeeAgent"
+   description: "Collects required support details and creates a Salesforce Case record"
+
+variables:
+   last_case_number: mutable string = ""
+      description: "Most recently created case number"
+
+system:
+   messages:
+      welcome: "Hi! I can help you create a support case. Share the issue and I will collect the required details."
+      error: "I could not create the case right now. Please verify the details and try again."
+
+   instructions: "You are a support intake assistant. Collect the required case details, confirm them clearly, and create a case only after all required values are available."
+
+start_agent topic_selector:
+   description: "Start support case creation"
+
+   reasoning:
+      instructions:|
+         Select the tool that best matches the user's message and conversation history. If it's unclear, make your best guess.
+      actions:
+         begin_case_creation: @utils.transition to @topic.case_intake
+            description: "Start collecting case details"
+
+topic case_intake:
+   description: "Collects support details and creates case records"
+
+   actions:
+      create_support_case:
+         description: "Creates a Salesforce Case record after all required details are collected"
+         inputs:
+            subject: string
+               description: "Short summary of the issue"
+            status: string
+               description: "Case status (for example: New, Working, Closed)"
+            origin: string
+               description: "Where the case came from (for example: Web, Phone, Email)"
+            priority: string
+               description: "Business urgency (for example: Low, Medium, High)"
+            customerName: string
+               description: "Customer full name"
+            customerEmail: string
+               description: "Customer email address"
+            customerPhone: string
+               description: "Customer phone number"
+         outputs:
+            caseId: string
+               description: "Created case record Id"
+            caseNumber: string
+               description: "Created case number"
+            creationStatus: string
+               description: "Result status, such as SUCCESS or ERROR"
+            errorMessage: string
+               description: "Error message when case creation fails"
+         target: "apex://CaseCreationService"
+
+   reasoning:
+      instructions:->
+         | Help the user create a support case.
+           Before creating a case, collect these required details:
+           - customerName
+           - customerEmail
+           - subject
+           - detailed issue context
+           - status
+           - origin
+           - priority
+
+           Ask focused follow-up questions for any missing required detail.
+           Validate that customerEmail appears valid before creating the case.
+           Once all required details are present, call {!@actions.create_support_case}.
+
+         if @variables.last_case_number:
+            | If a case was created in this session, reference the latest number: {!@variables.last_case_number}.
+      actions:
+         create_support_case: @actions.create_support_case
+            with subject=...
+            with status=...
+            with origin=...
+            with priority=...
+            with customerName=...
+            with customerEmail=...
+            with customerPhone=...
+            set @variables.last_case_number = @outputs.caseNumber
